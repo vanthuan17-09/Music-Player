@@ -37,6 +37,7 @@ const volumeBox = $('.volume-box');
 const app = {
     currentIndex: 0,
     isPlaying: false,
+    isRandom : false,
   songs: [
     {
       name: "Dừng chân, đứng lại",
@@ -187,6 +188,18 @@ const app = {
       _this.nextSong();
       audio.play()
     }
+    //khi prev song
+    prevBtn.onclick = function(){
+      _this.prevSong();
+      audio.play();
+    }
+    //khi random song
+    randomBtn.onclick = function(e){
+      _this.isRandom = !_this.isRandom;
+      randomBtn.classList.toggle('active',_this.isRandom);
+      _this.randomSong();
+      audio.play();
+    }
   },  
   loadCurrentSong: function(){
     nameSong.textContent = this.currentSong.name;
@@ -201,6 +214,22 @@ const app = {
     }
     this.loadCurrentSong();
   },
+  prevSong: function(){
+    this.currentIndex--;
+    console.log(this.currentIndex, this.songs.length );
+    if(this.currentIndex <= 0){
+      this.currentIndex = this.songs.length - 1;
+    }
+    this.loadCurrentSong();
+  },
+  randomSong : function(){
+    let newIndex
+    do{
+      newIndex = Math.floor(Math.random() * this.songs.length)
+    }while(newIndex === this.currentIndex)
+      this.currentIndex = newIndex
+      this.loadCurrentSong();
+  },
   start: function () {
     this.defineProperties();
 
@@ -212,4 +241,4 @@ const app = {
 };
 
 app.start();
-//56.56p
+//06.05
