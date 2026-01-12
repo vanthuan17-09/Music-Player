@@ -131,7 +131,15 @@ const app = {
   handleEvents: function(){
     const _this = this;
     const cdWidth = cd.offsetWidth;
-            //xu ly phong to,thu nho cd
+    //xu ly cd quay va dung
+    const cdThumbAnimate = cdThumb.animate([
+      {transform: 'rotate(360deg)'}
+    ], {
+      duration: 10000, //10 seconds
+      iterations: Infinity,
+    })
+    cdThumbAnimate.pause();
+    //xu ly phong to,thu nho cd
     document.onscroll = function(){
         const scrollTop = document.documentElement.scrollTop || window.scrollY;
         const newCdWidth = cdWidth - scrollTop;
@@ -152,21 +160,46 @@ const app = {
     audio.onplay = function(){
         _this.isPlaying = true;
         playBtn.classList.add('playing');
+        cdThumbAnimate.play();
     }
     //KHI SONG BI PAUSE
         audio.onpause = function(){
         _this.isPlaying = false;
         playBtn.classList.remove('playing');
+        cdThumbAnimate.pause();
     }
     //khi tien do bai hat thay doi
     audio.ontimeupdate = function(){
-        console.log(audio.currentTime / audio.duration *100)
+      if(audio.duration){
+        const progressPercent = Math.floor(audio.currentTime / audio.duration *100);
+        progress.value = progressPercent;
+      }
+    }
+
+    //xu li khi tua Song
+    progress.onchange = function(e){
+        const seekTime = audio.duration / 100 * e.target.value
+        audio.currentTime = seekTime
+    }
+
+    //khi next song
+    nextBtn.onclick = function(){
+      _this.nextSong();
+      audio.play()
     }
   },  
   loadCurrentSong: function(){
     nameSong.textContent = this.currentSong.name;
-    cdThumb.backgroundImage = `url('${this.currentSong.image}')`;
+    cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
     audio.src = this.currentSong.path; 
+  },
+  nextSong: function(){
+    this.currentIndex++;
+    console.log(this.currentIndex, this.songs.length );
+    if(this.currentIndex >= this.songs.length){
+      this.currentIndex = 0;
+    }
+    this.loadCurrentSong();
   },
   start: function () {
     this.defineProperties();
@@ -179,3 +212,4 @@ const app = {
 };
 
 app.start();
+//56.56p
