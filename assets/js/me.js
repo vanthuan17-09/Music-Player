@@ -10,7 +10,7 @@
     9. scroll active song into view
     10. play song when click
  */
-const PLAYER_STORAGE_KEY = "It's you";
+const PLAYER_STORAGE_KEY = "Its you";
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -39,7 +39,7 @@ const app = {
     isPlaying: false,
     isRandom : false,
     isRepeat : false,
-    // config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {} ,
+    config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {} ,
   songs: [
     {
       name: "Dừng chân, đứng lại",
@@ -102,10 +102,10 @@ const app = {
       path: "./assets/music/song10.mp3",
     },
   ],
-  //   setConfig: function(key, value){
-  //     this.config[key] = value;
-  //     localStorage.setItem(PLAYER_STORAGE_KEY, this.config)
-  // },
+     setConfig: function(key, value){
+       this.config[key] = value;
+       localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config))
+   },
   render: function () {
     const htmls = this.songs.map((song,index) => {
       return `
@@ -216,14 +216,14 @@ const app = {
     //xu ly random song
     randomBtn.onclick = function(e){
       _this.isRandom = !_this.isRandom;
-
+      _this.setConfig('isRandom', _this.isRandom)
       randomBtn.classList.toggle('active',_this.isRandom);
     }
 
     //Xu ly repeat Song
     repeatBtn.onclick = function(){
       _this.isRepeat = !_this.isRepeat;
-
+      _this.setConfig('isRepeat', _this.isRepeat)
       repeatBtn.classList.toggle('active',_this.isRepeat);
     }
 
@@ -268,6 +268,10 @@ const app = {
     cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
     audio.src = this.currentSong.path; 
   },
+  loadConfig: function() {
+    this.isRandom = this.config.isRandom
+    this.isRepeat = this.config.isRepeat
+  },
   nextSong: function(){
     this.currentIndex++;
     if(this.currentIndex >= this.songs.length){
@@ -291,12 +295,23 @@ const app = {
       this.loadCurrentSong();
   },
   start: function () {
+    //gan cau hinh tu config vao ung dung
+    this.loadConfig();
+
+    //dinh nghia cac thuoc tinh cho object
     this.defineProperties();
 
+    //lang nghe/xu ly  cac su kien(dom object)
     this.handleEvents();
     //Tai tt bai hat dau tien vao UI khi chay app
     this.loadCurrentSong();
+
+    //render playlist
     this.render();
+
+    //hien thi trang thai ban dau cua btn repeat va random
+    repeatBtn.classList.toggle('active',this.isRepeat)
+    randomBtn.classList.toggle('active',this.isRandom)
   },
 };
 
